@@ -1,13 +1,23 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const usersRouter = require ("./routes/users/usersRouter");
+const connectDB = require("./config/database");
+
 //!Create an express app
 const app = express();
 
 //! load the environment variable
 dotenv.config();
+
+//!Establish connection to Mongodb
+connectDB();
+
+//!set up the middleware
+app.use(express.json());
+
 //?Setup the Router
-app.use("/", usersRouter);
+app.use("/api/v1/user", usersRouter);
+//app.use("/", usersRouter);//
 const PORT = process.env.PORT|| 9080;
 app.listen(PORT, () => {
     console.log(`Server started at ${PORT}`);     
