@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs");
 const User = require("../../models/Users/User");
+const generateToken = require("../../utils/generateToken");
 //@desc Register new user
 //@route POAT /api/v1/user/register
 //@access public
-
 
 exports.register = async (req, resp) => {
     try {
@@ -38,8 +38,38 @@ exports.login = async (req, resp) => {
         if(!user) {
             throw new Error("Invalid credentials");
         }
-        
+        let isMatched = await bcrypt.compare(password,user?.password);
+        if(!isMatched) {
+            throw new Error("Invalid credentials");
+        }
+        user.lastLogin =  new Date();
+        await user.save();
+        resp.json({
+                   status: "success",
+                   email:user?.email,
+                   _id:user?._id,
+                   username:user?.username,
+                   role:user?.role,
+                   token:generateToken(user),
+                });
     }catch (error) {
-
+       resp.json({status: "failed", message: error?.message });
+    }
+};
+//@desc Profile view
+//@route GET /api/v1/user/profile/:id
+//@access private
+exports.getProfile = async(req, resp) => {
+    try {
+        resp.json({
+            status:"success",
+             message: "Profile fetched",
+             data:"dummu user"
+            });
+    }catch (error) {
+        resp.json({
+            status:"error",
+            message: error?.message,
+            });
     }
 };
