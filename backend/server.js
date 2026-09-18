@@ -17,8 +17,12 @@ app.use(express.json());
 
 //?Setup the Router
 app.use("/api/v1/user", usersRouter);
-//app.use("/", usersRouter);//
-const PORT = process.env.PORT|| 9080;
+//?Setup the global error handler
+app.use((error,req,resp,next) =>{
+   const status = error?.status ? error.status: "failed";
+   resp.status(500).json({ status: "failed", message: error?.message});
+})
+const PORT = process.env.PORT || 9080;
 app.listen(PORT, () => {
     console.log(`Server started at ${PORT}`);     
 });

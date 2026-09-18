@@ -5,7 +5,7 @@ const generateToken = require("../../utils/generateToken");
 //@route POAT /api/v1/user/register
 //@access public
 
-exports.register = async (req, resp) => {
+exports.register = async (req, resp, next) => {
     try {
        const {username,password,email } = req.body;
        const user = await User.findOne({ username });
@@ -25,13 +25,13 @@ exports.register = async (req, resp) => {
         role: newUser?.role,
        });
     } catch (error) {
-        resp.json({status:"Failed", message: error?.message });
+        next(error); //goto global error handler
     }
 };
 //@desc Login new user
 //@route POAT /api/v1/user/login
 //@access public
-exports.login = async (req, resp) => {
+exports.login = async (req, resp, next) => {
     try{
         const {username,password} = req.body;
         const user = await User.findOne({username });
@@ -53,23 +53,23 @@ exports.login = async (req, resp) => {
                    token:generateToken(user),
                 });
     }catch (error) {
-       resp.json({status: "failed", message: error?.message });
+       next(error); //goto global error handler
     }
 };
 //@desc Profile view
 //@route GET /api/v1/user/profile/:id
 //@access private
-exports.getProfile = async(req, resp) => {
+exports.getProfile = async(req, resp, next) => {
+    //console.log("Rec:", req.userAuth);
+
     try {
+        const user = await User.findById(req.userAuth.id);
         resp.json({
-            status:"success",
+             status:"success",
              message: "Profile fetched",
-             data:"dummu user"
+             user,
             });
     }catch (error) {
-        resp.json({
-            status:"error",
-            message: error?.message,
-            });
+        next(error); //goto global error handler
     }
 };
