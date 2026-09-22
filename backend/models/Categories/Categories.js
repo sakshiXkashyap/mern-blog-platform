@@ -14,10 +14,12 @@ const categorySchema = new mongoose.Schema(
         type: Number,
         default: 0
       },
-      post: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
-      },
+      post: [
+          {
+           type: mongoose.Schema.Types.ObjectId,
+           ref: "Post",
+          }
+      ],
     },
     {
       timestamps: true,
