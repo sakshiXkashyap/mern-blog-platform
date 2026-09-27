@@ -36,3 +36,39 @@ exports.createComment = asyncHandler(async (req, resp) => {
         comment,
     });
 });
+
+//@desc DELETE comment
+//@route DELETE /api/v1/comment/:commentId
+//@access private
+
+exports.deleteComment = asyncHandler(async(req, resp) => {
+    //!Get the comment id to be deleted 
+    const commentId = req.params.commentId;
+    await Comment.findByIdAndDelete(commentId);
+    resp.status(201).json({
+        status: "success",
+        message: "Comment successfully deleted!",
+    });
+});
+
+//@desc Update comment
+//@route UPDATE /api/v1/comment/:commentId
+//@access private
+
+exports.updateComment = asyncHandler(async(req, resp) => {
+    //!Get the comment id to be deleted 
+    const commentId = req.params.commentId;
+    //!Get message 
+    const message = req.body.message;
+
+    const updatedComment = await Comment.findByIdAndUpdate(
+        commentId, 
+        {message}, 
+        {new:true, runValidators: true}
+    );
+    resp.status(201).json({
+        status: "success",
+        message: "Comment successfully updated!",
+        updatedComment,
+    });
+});
