@@ -10,7 +10,7 @@ const commentSchema = new mongoose.Schema(
         ref: "User",
         required: true, 
       },
-      postTd: {
+      postId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
         required: true,
@@ -22,5 +22,5 @@ const commentSchema = new mongoose.Schema(
 );
 //!convert schema to model 
 
-const Comment= mongoose.model("Comment", commmentSchema);
+const Comment = mongoose.model("Comment", commentSchema);
 module.exports = Comment;
