@@ -108,3 +108,90 @@ exports.blockUser = asyncHandler(async(req,resp,next) =>{
       message: "User blocked successfully",
     });
 });
+//@desc UnBlock user
+//@route PUT /api/v1/users/unblock/:userIdToUnBlock
+//@access private
+
+exports.unblockUser = asyncHandler(async (req, resp, next) => {
+    // Find the user ID to be unblocked
+    const userIdToUnBlock = req.params.userIdToUnBlock;
+    const userToUnBlock = await User.findById(userIdToUnBlock);
+    if (!userToUnBlock) {
+        let error = new Error("User to unblock not found!");
+        next(error);
+        return;
+    }
+    // Find the current user
+    const userUnBlocking = req?.userAuth?._id;
+    const currentUser = await User.findById(userUnBlocking);
+
+    // Check if the user to unblock is already blocked
+    if (!currentUser.blockedUsers.includes(userIdToUnBlock)) {
+        let error = new Error("User not blocked!");
+        next(error);
+        return;
+    }
+    // Remove the user from the current user blockedUsers array
+    currentUser.blockedUsers = currentUser.blockedUsers.filter((id) => {
+        return id.toString() !== userIdToUnBlock.toString();
+    });
+    //update the DB
+    await currentUser.save();
+
+    // Send response
+    resp.json({
+        status: "success",
+        message: "User Unblocked successfully",
+    });
+});
+
+//@desc view another user profile
+//@route GET /api/v1/users/view-another-profile/:userProffileId
+//@acccess private
+
+exports.viewOtherProfile = asyncHandler(async(req, resp, next) =>{
+    //get the user id whose profile is to viewed
+    const userProfileId = req.params.userProfileId;
+    const userProfile = await User.findById(userProfileId);
+    if (!userProfileId) {
+        let error = new Error("User whose profile is to be viewed not present!");
+        next(error);
+        return;
+    }
+    const currentUserId = req?.userAuth?.id;
+    // Check if we have already viewed the profile of userProfile
+    if (userProfile.profileViewers.includes(currentUserId)){
+        let error = new Error("You have already viewed the profile!");
+        next(error);
+        return;
+    }
+
+    //push the currentUserId innto array of userProfile
+    userProfile.profileViewers.push(currentUserId);
+    //update the DB
+    await userProfile.save();
+    //return the resp
+     resp.json({
+        status: "success",
+        message: "Profile successfully viewed",
+    });
+});
+
+//@desc Follow user 
+//@route PUT /api/v1/users/uollowing/:userIdToFollow
+//@acccess private
+
+expressAsyncHandler.followingUser = asyncHandler(async (req, resp, next) =>{
+    //Find the current user id
+    const currentUserId = req?.userAuth?._id;
+    //find the user to be followed
+    const userIdToFollow = req.params.userIdToFollow;
+    const userProfile = await User.findById(userIdToFollow);
+    if (!userProfileId) {
+        let error = new Error("User to be followed not present!");
+        next(error);
+        return;
+    }
+
+    
+})
